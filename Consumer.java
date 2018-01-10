@@ -1,18 +1,22 @@
 package MarketPlace;
 
-class Consumer {
-	Fruit f;
+class Consumer implements Runnable {
+	Fruit fruit;
 	Market market;
 	public  Consumer(char c,int n,Market m) 
 	{
-		f=new Fruit(c,n);
+		fruit=new Fruit(c,n);
 		market=m;
 	}
 	
 	void purchase() 
 	{
-		
+		market.addProduce(fruit);
 	}
-	public static void main(String args[]) {}
 
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		purchase();
+	}
 }
