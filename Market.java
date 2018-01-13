@@ -1,47 +1,57 @@
 package MarketPlace;
 import java.util.*;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicInteger;
 public class Market {
 	public final int CAPACITY;
 	AtomicInteger currentValue;
-	
-	public HashMap<Character,Integer> slots;
+	public HashMap<Character,Fruit> slots;
+//	public Map<Character,ThreadGroup> consList ;
 	public Market(int cap) 
 	{
 		CAPACITY=cap;
+		currentValue=new AtomicInteger(0);
 		slots=new HashMap<>();
+		slots.put('A', new Fruit());
+		slots.put('W', new Fruit());
+		slots.put('G', new Fruit());
+		
+	/*	consList=new HashMap<>();
+		consList.put('A', new ThreadGroup("A"));
+		consList.put('G', new ThreadGroup("G"));
+		consList.put('W', new ThreadGroup("W"));*/
 	}
 	
-	
-	public void updateMarket(Fruit f) 
+	synchronized public void updateMarket(Fruit f) 
 	{
-		int n=slots.get(f.getFruit());
-		slots.put(f.getFruit(),n+f.produce_no);
-		int a=currentValue.get();
-		currentValue.set(a+f.produce_no);
+		Fruit oldf=slots.get(f.getFruit());
+		oldf.addQuan(f.getQuan());
+//		consList.get(f.fruit).resume();
 	}
 	
-	public boolean addProduce(Fruit f) 
+	synchronized public boolean addProduce(Fruit f) 
 	{
-		if(currentValue.get()+f.getProduce_no()<=CAPACITY) 
+		if(currentValue.get()+f.getQuan()<=CAPACITY) 
 		{
 			updateMarket(f);
 		}
 		return false;
 	}
 	
-	public void consume(Fruit f,int quant) 
+	synchronized public void consume(Fruit f) 
 	{
-		if(quant<currentValue.get()&&quant<slots.get(f.getFruit())) 
-		{
-			int a=slots.get(f.fruit);
-			slots.put(f.fruit,a-quant);
+		char fname=f.getFruit();
+		if(slots.containsKey(fname))
+		{	Fruit oldf=slots.get(fname);
+			if(f.getQuan()<currentValue.get()&&f.getQuan()<=oldf.getQuan()) 
+			{
+				System.out.println("Updating market with values"+f.toString());
+				oldf.addQuan(f.getQuan()*-1);
+			}
 		}
-		
 	}
-	
-	
-	
 	
 
 }

@@ -2,20 +2,33 @@ package MarketPlace;
 
 class Fruit {
 	char fruit;
-	int produce_no;
-	
+	int quan;
 	public Fruit(char c,int n) 
 	{
 		fruit=c;
-		produce_no=n;
+		this.quan=n;
 	}
+	public Fruit() {}
 	public char getFruit() {
 		return fruit;
 	}
 	public void setFruit(char fruit) {
 		this.fruit = fruit;
 	}
-	public int getProduce_no(){
-		return produce_no;
+	public int getQuan() {
+		return quan;
+	}
+	public void setQuan(int quan) {
+		this.quan = quan;
+	}
+	public void addQuan(int n) 
+	{
+		quan+=n;
+	}
+	
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return fruit+"  "+quan;
 	}
 }
