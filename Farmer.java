@@ -2,64 +2,49 @@ package MarketPlace;
 
 import java.util.*;
 
-public class Farmer  implements Runnable, Person {
-	int totalProduces=0;
-	Market market;
+public class Farmer implements Runnable {
+	Fruit fruit;
 	String fname;
-	static int threadCount=0;
-	Map<Character, Fruit> produce;
-
-	public Farmer(Market m) {
-		produce = new HashMap<>();
-		produce.put('A', new Fruit('A', 0));
-		produce.put('W', new Fruit('W', 0));
-		produce.put('G', new Fruit('G', 0));
-		threadCount++;
-		fname="Farmer"+threadCount;
-		this.market=m;
-	}
-
-	synchronized void addProduce(char fname,int n) {
-		if (produce.containsKey(fname)) {
-			Fruit oldf = produce.get(fname);
-			oldf.addQuan(n);
-			totalProduces += n;
-			notifyAll();
-		} else {
-			produce.put(fname, new Fruit(fname, n));
-			totalProduces += n;
-		}
-	}
-
-	synchronized void sellProduce() throws InterruptedException {
-		if (canSell()) {
-			for (Fruit f : produce.values()) {
-				market.addProduce(f);
-			}
-		} else {
-			System.out.println(""+fname+" cant sell produce");
-			wait();
-		}
-	}
-
-	synchronized public boolean canSell() {
-		if (market.CAPACITY - market.currentValue.get() >= totalProduces)
-			{
-				System.out.println(""+fname+"can sell produce");
-				return true;
-			}
-		return false;
+	Market m;
+	boolean isSold = false;
+	static int farmercount = 0;
+	public Farmer(Market m, char c, int n) {
+		farmercount++;
+		this.fname = "Farmer" + farmercount;
+		this.m = m;
+		fruit = new Fruit(c, n);
+		
 	}
 
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
+		System.out.println(fname + " Thread started");
 		try {
-			System.out.println("Running Thread"+fname);
-			sellProduce();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			while (!isSold) {
+				System.out.println("Checking for Producer " + fname);
+				synchronized (this) {
+					System.out.println("In object of "+this.getClass().getName());
+					if (m.canAdd(fruit,fname)) {
+						System.out.println("Consumers waiting for this fruit="+m.slots.get(fruit.fruit).a.size());
+						System.out.println(fname + "Adding Fruit");
+						for(Object e:m.slots.get(fruit.fruit).a) 
+						{
+							System.out.println(e+"was waiting for this fruit and notifying"+this.fruit.fruit);
+							e.notifyAll();
+						}
+						m.addFruit(fruit, fname);
+						isSold = true;
+						m.slots.get(fruit.fruit).notify();
+						
+					} else {
+						System.out.println("Producer  " + fname + "wait");
+						wait();
+					}
+				}
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
 		}
 	}
 }

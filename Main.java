@@ -1,34 +1,33 @@
 package MarketPlace;
 
+import java.util.Random;
+
 public class Main {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		
-		Market m=new Market(20);
-		Consumer c=new Consumer('A', 3, m);
-		Consumer c2=new Consumer('G', 3, m);
-		Consumer c3=new Consumer('W', 3, m);
-		Farmer f=new Farmer(m);
-		f.addProduce('A', 2);
-		Farmer f2=new Farmer(m);
-		f.addProduce('G', 3);
-		Farmer f3=new Farmer(m);
-		f.addProduce('W', 2);
-		
-		Thread t=new Thread(f);
-		Thread t2=new Thread(f2);
-		Thread t3=new Thread(f3);
-		t.start();
-		t2.start();
-		t3.start();
-		
-		Thread t4=new Thread(c);
-		Thread t5=new Thread(c2);
-		Thread t6=new Thread(c3);
-		t4.start();
-		t5.start();
-		t6.start();
+		char c[]= {'A','B','W','G'};
+		Market m=new Market(40);
+		int n=10;
+		while(n-->0)
+		{
+			Random r=new Random();
+			int ch=r.nextInt(10);
+			System.out.println("Thread no"+ch);
+			int ftype=r.nextInt(4);
+			int quan=r.nextInt(10);
+			int conquan=r.nextInt(5);
+			if(ch<=6) 
+			{
+				Thread t=new Thread(new Consumer(c[ftype],conquan,m));
+				t.start();
+			}
+			else 
+			{
+				Thread t=new Thread(new Farmer(m,c[ftype],quan));
+				t.start();
+			}
+		}
 	}
 
 }
